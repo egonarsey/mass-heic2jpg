@@ -18,8 +18,8 @@ type writerSkipper struct {
 }
 
 func main() {
-	fmt.Println("")
 	oldHeicDir, err := getOldHeicDir(os.Args)
+	fmt.Println("Process started. Working dir is set to ", oldHeicDir)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,13 +29,16 @@ func main() {
 		createNewJpgDir(oldHeicDir)
 	}
 	for _, heic := range heics {
-		err := convertHeicToJpg(filepath.Join(oldHeicDir, heic), getJpgFilePath(oldHeicDir, heic))
+		oldHeicPath := filepath.Join(oldHeicDir, heic)
+		newHeicPath := getNewHeicFilePath(oldHeicDir, heic)
+		jpgPath := getJpgFilePath(oldHeicDir, heic)
+		err := convertHeicToJpg(oldHeicPath, jpgPath)
 		if err != nil {
-			log.Fatalf(err.Error())
+			fmt.Printf("convertHeicToJpg() %q %q %q ", oldHeicPath, jpgPath, err.Error())
 		} else {
-			err := MoveFile(filepath.Join(oldHeicDir, heic), getNewHeicFilePath(oldHeicDir, heic))
+			err := MoveFile(oldHeicPath, newHeicPath)
 			if err != nil {
-				log.Fatalf(err.Error())
+				fmt.Printf("MoveFile() %q %q %q ", oldHeicPath, newHeicPath, err.Error())
 			}
 		}
 	}
