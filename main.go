@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	s "strings"
+	"time"
 
 	"github.com/adrium/goheif"
 )
@@ -25,10 +26,12 @@ func main() {
 	}
 	heics, err := getHeicFilesInDir(oldHeicDir)
 	if len(heics) != 0 {
+		fmt.Println(len(heics), " heic files have been founded.")
 		createNewHeicDir(oldHeicDir)
 		createNewJpgDir(oldHeicDir)
 	}
-	for _, heic := range heics {
+	i := 0
+	for j, heic := range heics {
 		oldHeicPath := filepath.Join(oldHeicDir, heic)
 		newHeicPath := getNewHeicFilePath(oldHeicDir, heic)
 		jpgPath := getJpgFilePath(oldHeicDir, heic)
@@ -40,6 +43,11 @@ func main() {
 			if err != nil {
 				fmt.Printf("MoveFile() %q %q %q ", oldHeicPath, newHeicPath, err.Error())
 			}
+		}
+		i++
+		if i == 100 {
+			fmt.Println(time.Now(), " ", i, "files processed. ", len(heics)-j, " left")
+			i = 0
 		}
 	}
 }
